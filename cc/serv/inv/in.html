@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <style>
+        .low-stock {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inventory Management</h1>
+    <div id="inventory">
+        <p id="product1">Product A: <span id="stock1">50</span> units</p>
+        <button onclick="decreaseStock('product1', 'stock1')">Sell 1 Product A</button>
+        <p id="product2">Product B: <span id="stock2">5</span> units</p>
+        <button onclick="decreaseStock('product2', 'stock2')">Sell 1 Product B</button>
+    </div>
+
+    <script>
+        // Function to decrease stock level
+        function decreaseStock(productId, stockId) {
+            const stockElement = document.getElementById(stockId);
+            let currentStock = parseInt(stockElement.innerText);
+            
+            if (currentStock > 0) {
+                currentStock--;
+                stockElement.innerText = currentStock;
+
+                // Check for low stock and alert
+                if (currentStock < 10) {
+                    document.getElementById(productId).classList.add("low-stock");
+                    alert(productId + " is running low on stock!");
+                }
+            } else {
+                alert("Stock for " + productId + " is already zero!");
+            }
+        }
+    </script>
+</body>
+</html>

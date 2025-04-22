@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var product_1 = require("./product");
+var book = new product_1.Product('Book A', 30, 'Book');
+var notebook = new product_1.Product('Note', 40, 'Stationary');
+var pen = new product_1.Product('Pen', 10, 'Stationary');
+var egg = new product_1.Product('Egg', 6, 'Diary');
+var apple = new product_1.Product('Apple', 30, 'Fruit');
+product_1.Product.addproduct(book);
+product_1.Product.addproduct(notebook);
+product_1.Product.addproduct(pen);
+product_1.Product.addproduct(egg);
+product_1.Product.addproduct(apple);
+product_1.Product.listproducts();

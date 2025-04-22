@@ -1,0 +1,146 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <style>
+        .product-list {
+            margin-top: 20px;
+        }
+        .product {
+            padding: 5px;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+        }
+        .product.low-stock {
+            background-color: #f8d7da;
+        }
+        .search-results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #e7f4e4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inventory Management</h1>
+
+    <!-- Form to add a new product -->
+    <h2>Add New Product</h2>
+    <form id="product-form">
+        <label for="product-number">Product Number:</label>
+        <input type="text" id="product-number" required><br><br>
+
+        <label for="product-name">Product Name:</label>
+        <input type="text" id="product-name" required><br><br>
+
+        <label for="product-quantity">Quantity:</label>
+        <input type="number" id="product-quantity" required min="1"><br><br>
+
+        <button type="submit">Add Product</button>
+    </form>
+
+    <hr>
+
+    <!-- Search Product Form -->
+    <h2>Retrieve Product Details</h2>
+    <label for="search-product-number">Enter Product Number:</label>
+    <input type="text" id="search-product-number">
+    <button onclick="retrieveProduct()">Search</button>
+
+    <div class="search-results" id="search-results">
+        <!-- Search result will be displayed here -->
+    </div>
+
+    <hr>
+
+    <h2>Product Inventory</h2>
+    <button onclick="displayProducts()">Display All Products</button>
+
+    <div class="product-list" id="product-list">
+        <!-- Product list will be displayed here -->
+    </div>
+
+    <script>
+        // Add a new product to the inventory
+        document.getElementById("product-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const productNumber = document.getElementById("product-number").value;
+            const name = document.getElementById("product-name").value;
+            const quantity = parseInt(document.getElementById("product-quantity").value);
+
+            fetch('/add-product', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productNumber, name, quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById("product-form").reset(); // Clear form
+            })
+            .catch(error => alert('Error: ' + error));
+        });
+
+        // Retrieve product details by product number
+        function retrieveProduct() {
+            const searchProductNumber = document.getElementById("search-product-number").value;
+
+            fetch(`/product/${searchProductNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    const searchResultsElement = document.getElementById("search-results");
+                    if (data.productNumber) {
+                        searchResultsElement.innerHTML = `
+                            <strong>Product Number: ${data.productNumber}</strong><br>
+                            Product Name: ${data.name}<br>
+                            Quantity: ${data.quantity}
+                        `;
+                    } else {
+                        searchResultsElement.innerHTML = `<p>No product found with that number.</p>`;
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+        }
+
+        // Display all products in the inventory
+        function displayProducts() {
+            fetch('/products')
+                .then(response => response.json())
+                .then(products => {
+                    const productListElement = document.getElementById("product-list");
+                    productListElement.innerHTML = ''; // Clear previous products
+
+                    if (products.length === 0) {
+                        productListElement.innerHTML = "<p>No products in the inventory.</p>";
+                        return;
+                    }
+
+                    products.forEach(product => {
+                        const productDiv = document.createElement("div");
+                        productDiv.classList.add("product");
+
+                        // Add low stock warning if quantity is less than 10
+                        if (product.quantity < 10) {
+                            productDiv.classList.add("low-stock");
+                        }
+
+                        productDiv.innerHTML = `
+                            <strong>Product Number: ${product.productNumber}</strong><br>
+                            Product Name: ${product.name}<br>
+                            Quantity: ${product.quantity}
+                        `;
+                        productListElement.appendChild(productDiv);
+                    });
+                })
+                .catch(error => alert('Error: ' + error));
+        }
+    </script>
+</body>
+</html>

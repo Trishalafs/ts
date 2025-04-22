@@ -1,0 +1,1 @@
+mongod dbpath="D:/058/mongo"
